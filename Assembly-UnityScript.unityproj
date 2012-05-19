@@ -46,11 +46,13 @@
   <ItemGroup>
      <Compile Include="Assets\Scripts\CharacterMove.js" />
      <Compile Include="Assets\Scripts\CubePhysics.js" />
+     <Compile Include="Assets\Scripts\GaController.js" />
      <Compile Include="Assets\Scripts\MainCameraControl.js" />
      <Compile Include="Assets\Scripts\TrackingCameraControl.js" />
      <Compile Include="Assets\Scripts\balanceScript.js" />
      <Compile Include="Assets\Scripts\cartBaseMainScript.js" />
      <Compile Include="Assets\Scripts\cartWheelMainScript.js" />
+     <Compile Include="Assets\Scripts\collisionKiller.js" />
      <Compile Include="Assets\Scripts\createJoints.js" />
      <Compile Include="Assets\Scripts\cubeMainScript.js" />
      <Compile Include="Assets\Scripts\dragit.js" />

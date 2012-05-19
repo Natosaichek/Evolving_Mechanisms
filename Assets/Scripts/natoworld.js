@@ -6,78 +6,6 @@ var j:joints;
 j=GameObject.Find("main").GetComponent(joints);
 while(!j.initialized) yield; //initialized is a variable at the bottom of joints.js
 
-////////////////////////////
-/* Various genome classes */
-////////////////////////////
-
-class GaGene {  							// The generic version of a gene
-	var parent:GaGene;
-	var crossoverProbability:float = .5;
-	var mutationProbability:float = .02;
-	function GaGene() {
-	}
-}
-
-class IntGene extends GaGene{ 				// A gene that contains an int value
-	var maxVal:int = 1;
-	var minVal:int = 0;
-	var val:int;
-	function IntGene(parent:GaGene) {
-		this.parent = parent;
-	}
-	function newVal() {
-		return Mathf.RoundToInt(Random.value*(maxVal-minVal) + minVal);
-	}
-}
-
-class FloatGene extends GaGene{				// A gene that contains a float value
-	var minVal:float = 0;
-	var maxVal:float = 1;
-	var val:float;
-	function FloatGene(parent:GaGene) {
-		this.parent = parent;
-	}
-	function newVal() {
-		return (Random.value*(this.maxVal-this.minVal) + minVal);
-	}
-}
-
-class Vec3Gene extends GaGene { 			// a gene that contains a Vector3 - a 3 D vector
-	var minXVal:float = 0;
-	var minYVal:float = 0;
-	var minZVal:float = 0;
-	var maxXVal:float = 1;
-	var maxYVal:float = 1;
-	var maxZVal:float = 1;
-	var val:Vector3;
-	function Vec3Gene(parent:GaGene) {
-		this.parent = parent; 
-	}
-	function newVal() {
-		return Vector3(randomFloat(minXVal,maxXVal),randomFloat(minYVal,maxYVal),randomFloat(minZVal,maxZVal));
-	}
-	function randomFloat(min:float,max:float) {
-		return Random.value*(max-min) + min;
-	}
-}
-
-class JointGene extends GaGene {
-	var joint:ConfigurableJoint;
-	function JointGene(parent:GaGene) {
-		this.parent = parent;
-		
-}
-
-class RigidbodyGene extends GaGene {
-	var initialAngle:Vector3; 	// (0,0,90) positions the wheel as standing up straight
-	var bodyType:String; 		// will eventually be an 'enum' probably.
-	var mass:float; 			// derived from radius,thickness and wheeltype.
-	var driven:boolean; 		// whether the wheel is connected to the drive system
-	function RigidbodyGene() { //position){
-	}
-}
-	
-	}
 
 ////////////////////
 /* Genome classes */
@@ -92,9 +20,6 @@ class RigidbodyGene extends GaGene {
 // assemble that rigidbody.
 // 
  		 		
-class GenericGenome { 				
-}
-
 /*The GaGenome class is an interface to be subclassed into cartgenomes, boat genomes, etc. */
 class GaGenome {					
 	var crossoverProbability = .5; // change to be a per-gene value?  Maybe during refactoring later.
