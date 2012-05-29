@@ -1,3 +1,4 @@
+#pragma strict
 //joints section
 //Debug.Log("joints script is loaded");
 var myParams= new Array();
@@ -183,18 +184,18 @@ unityValues[9]="theJoint.axis";
     
 
 function createJoint(startobject:GameObject,endobject:GameObject){
-	axis=(startobject.transform.position-endobject.transform.position)/2;
-	anchor=axis;
+	var axis=(startobject.transform.position-endobject.transform.position)/2;
+	var anchor=axis;
 	return createJoint(startobject,endobject,anchor,axis);
 }
 
 function createJoint(startobject:GameObject,endobject:GameObject,jointAxis:Vector3){
-	anchor=jointAxis;
+	var anchor=jointAxis;
 	return createJoint(startobject,endobject,anchor,jointAxis);
 }
 
 function createJoint(startobject:GameObject,endobject:GameObject,jointAnchor:Vector3,jointAxis:Vector3){
-	thejoint=startobject.AddComponent(ConfigurableJoint);
+	var thejoint:ConfigurableJoint = startobject.AddComponent(ConfigurableJoint);
 	thejoint.axis=jointAxis;
 	//Debug.Log(thejoint.axis);
 	thejoint.anchor=jointAnchor;
@@ -205,9 +206,9 @@ function createJoint(startobject:GameObject,endobject:GameObject,jointAnchor:Vec
 	return thejoint;
 }
 
-function lockAxes(startobject){
+function lockAxes(startobject:GameObject){
 	//Debug.Log("locking joints");
-	thejoint=startobject.GetComponent(ConfigurableJoint);
+	var thejoint:ConfigurableJoint =startobject.GetComponent(ConfigurableJoint);
 	//Debug.Log("locking joint"+thejoint);
 	thejoint.xMotion=ConfigurableJointMotion.Locked;
 	thejoint.yMotion=ConfigurableJointMotion.Locked;
@@ -222,39 +223,39 @@ function lockAxes(startobject){
 
 
 //example joint1 breakforce=10;breakitdown=breakmine;etc)
-function changeJoint(thejoint,jointchanges){
+function changeJoint(thejoint:ConfigurableJoint,jointchanges:String){
 	//Debug.Log("changing joints");
 	//Debug.Log(jointchanges);
-	l=jointchanges.length;
+	var l=jointchanges.length;
 	if (jointchanges[l-1]==";"[0]){
 		//Debug.Log("there is a semicolon at the end");
 		jointchanges=jointchanges.Substring(0,l-1);
 		//Debug.Log(jointchanges);
 		//Debug.Log("is semicolon removed?");
 	}
-	jointchangesA=new Array();
+	var jointchangesA=new Array();
 	jointchangesA=Regex.Split(jointchanges,";");
-	for  (i=0;i<jointchangesA.length;i++){
-		jointparamA=new Array();
+	for  (var i=0;i<jointchangesA.length;i++){
+		var jointparamA=new Array();
 		jointparamA=Regex.Split(jointchangesA[i],"=");
-		ptype=jointparamA[0];
-		pvalue=jointparamA[1];
+		var ptype=jointparamA[0];
+		var pvalue=jointparamA[1];
 		Debug.Log("p "+ptype+" "+pvalue);
 		
 		//Debug.Log(pvalue+"after");
-		utype=myParamToUnityParam(ptype);
+		var utype=myParamToUnityParam(ptype);
 		if (ptype=="targetrotation"){
 			pvalue=toQuaternion(pvalue);
 		}
 		//Debug.Log("pvalue="+pvalue);
-		uvalue=myValueToUnityValue(pvalue);
+		var uvalue=myValueToUnityValue(pvalue);
 		//Debug.Log("u "+utype+" "+uvalue);
 		
 		if(utype && uvalue){
 			//Debug.Log(utype + "=" + uvalue);	
 
 			// TODO: REPLACE THIS EVAL			eval(utype + "=" + uvalue);		
-			cb=thejoint.connectedBody;
+			var cb=thejoint.connectedBody;
 			thejoint.connectedBody=cb;	
 		}
 		else{
@@ -267,13 +268,13 @@ function changeJoint(thejoint,jointchanges){
 function toQuaternion(vec){
 	Debug.Log("vec="+vec);
 	if (Regex.IsMatch(vec,"vec")){
-		re="vec";
+		var re="vec";
 		vec=Regex.Replace(vec,re,"Vector3");
 		}
 	
 	// TODO: REPLACE THIS EVAL vece=eval(vec);
 	//Debug.Log(vece);
-	Qt = Quaternion.Euler(vec);
+	var Qt = Quaternion.Euler(vec);
 	//Debug.Log(Qt);
 	return "Quaternion"+Qt.ToString();
 	}
@@ -281,8 +282,8 @@ function toQuaternion(vec){
 
 function myParamToUnityParam(theparam){
 	Debug.Log(theparam+" converting param to unity param");
-	wordnum=-1;
-	for(i=0;i<myParams.length;i++){
+	var wordnum=-1;
+	for(var i=0;i<myParams.length;i++){
 		//Debug.Log(theparam + "," + myParams[i]);
 		if (theparam==myParams[i]){
 			wordnum=i;
@@ -301,8 +302,8 @@ function myParamToUnityParam(theparam){
 	
 function myValueToUnityValue(thevalue){
 	//Debug.Log(thevalue+" converting value to unityvalue");
-	wordnum=-1;
-	for(i=0;i<myValues.length;i++){
+	var wordnum=-1;
+	for(var i=0;i<myValues.length;i++){
 		if (thevalue==myValues[i]){
 			wordnum=i;
 			break;
@@ -314,8 +315,8 @@ function myValueToUnityValue(thevalue){
 	else{
 		
 		if (Regex.IsMatch(thevalue,"vec")){
-			re="vec";
-			myvalue=Regex.Replace(thevalue,re,"Vector3");
+			var re="vec";
+			var myvalue=Regex.Replace(thevalue,re,"Vector3");
 			return myvalue;
 		}	
 		//Debug.Log("error cannot find it");

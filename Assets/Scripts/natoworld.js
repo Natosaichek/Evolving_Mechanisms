@@ -248,11 +248,13 @@ function loadObject(objType:String,objpos:Vector3,addscript:boolean)
 	var obj:GameObject = Instantiate (Resources.Load(objType),objpos,Quaternion.identity);
 	Debug.Log(obj);
 	obj.transform.position = objpos;
+	obj.AddComponent("collisionKiller");
 	if(addscript) {
 		Debug.Log("locating " + objType + " main script");	
 		var scriptName = objType+"MainScript";
 		Debug.Log("adding "+scriptName);	
-		obj.AddComponent(scriptName);
+		//Debug.Log("adding collision killer script component");	
+		//obj.AddComponent("collisionKiller");
 		var thisScript = obj.GetComponent(scriptName);	
 		Debug.Log("passing in mainscript of "+this);
 		//thisScript.intialize(this);

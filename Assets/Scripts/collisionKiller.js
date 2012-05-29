@@ -1,3 +1,7 @@
 function OnCollisionEnter (collision : Collision) {
-	Destroy (gameObject);
+	if (Time.fixedTime <= 1) {
+		if(collision.gameObject.name != "Plane") {
+			Destroy (gameObject);
+		}
+	}
 }
