@@ -2,7 +2,7 @@
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
   <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Scripts\natoworld.js">
     <Files>
-      <File FileName="Assets\Scripts\natoworld.js" Line="305" Column="21" />
+      <File FileName="Assets\Scripts\natoworld.js" Line="317" Column="16" />
       <File FileName="Assets\Scripts\GaController.js" Line="173" Column="39" />
       <File FileName="Assets\Scripts\cartBaseMainScript.js" Line="7" Column="33" />
       <File FileName="Assets\Scripts\cartWheelMainScript.js" Line="10" Column="2" />

@@ -95,7 +95,6 @@ class CartGenome extends GaGenome{
     var motorCG:Vector3;				// position of the motor
     var structureMassCG:Vector3;		// will initially just be (0,1,0), but may have a variable y parameter - how high off the ground the structure nominally sits.
     
-    var numWheels:int;					// How many wheels the cart has
     var wheelPositions:Vector3[];		// array of wheel positions - is checked to ensure no collisions between existing wheels or the body of the vehicle.
     var WheelGenomes:WheelGenome[];		// array of wheel genomes - determines the type of wheel (wheg? circular?), radius, mass, width, etc.
     
@@ -109,10 +108,10 @@ class CartGenome extends GaGenome{
 	    this.structureMass = Random.value*10+1;
 	    this.powerPackCG = this.randomVector3();
 	    this.motorCG = randomVector3();
-	    this.numWheels = Mathf.CeilToInt(Random.value*5);
-	    this.wheelPositions = new Vector3[this.numWheels];// = new Array(this.numWheels);
-	    this.WheelGenomes = new WheelGenome[this.numWheels]; //= new Array(this.numWheels);
-	    for(var i=0; i<this.numWheels; i++) {
+	    var numWheels = Mathf.CeilToInt(Random.value*5);
+	    this.wheelPositions = new Vector3[numWheels];// = new Array(this.numWheels);
+	    this.WheelGenomes = new WheelGenome[numWheels]; //= new Array(this.numWheels);
+	    for(var i=0; i<numWheels; i++) {
 	    	this.WheelGenomes[i] = new WheelGenome(); //randomVector3());
 	    	this.wheelPositions[i] = randomVector3();
 	    }
@@ -178,7 +177,8 @@ class CartMaker {
 	}	
 	function makeCart(index:int,name:String,position:Vector3,genome:CartGenome) {
 		
-		// Determine how 'spread out' all the pieces of the cart are.  
+		// Determine how 'spread out' all the pieces of the cart are.
+		Debug.Log("index:"+index+" name"+name+" position"+position+" genome"+genome);
 		var structuralDistance = Mathf.Sqrt(genome.structureMass);
 
 		// Determine the masses of the various structural components
@@ -210,7 +210,7 @@ class CartMaker {
 			cartbase.rigidbody.mass = basemass;
 			motor.rigidbody.mass = motormass;
 			powerpack.rigidbody.mass = powerpackmass;
-			var thiscart = Cart(genome.numWheels+3);
+			var thiscart = Cart(genome.WheelGenomes.Length+3);
 			
 			// connect the joint to the motor.  It will start at the motor, go to the cart.  It has a center at the center of the motor(0,0,0), and a primary axis of (1,0,0) - the x axis.
 			var motorjoint = gaController.j.createJoint(motor,cartbase,Vector3(0,0,0),Vector3(1,0,0));
@@ -220,7 +220,18 @@ class CartMaker {
 			Debug.Log("build wheels");
 			//var wheels = Array(genome.numWheels);
 			var wg:WheelGenome;
-			for(var i=0; i<genome.numWheels; i++) {
+			if( genome.WheelGenomes.Length > genome.wheelPositions.Length) {
+				var newWheelPositions = new Vector3[genome.WheelGenomes.Length];
+				for (var k = 0; k<genome.wheelPositions.Length; k++) {
+					newWheelPositions[k] = genome.wheelPositions[k];
+				}
+				for (var j = k; j<newWheelPositions.Length; j++) {
+					newWheelPositions[j] = genome.randomVector3();
+				}
+				genome.wheelPositions = newWheelPositions;
+			}
+			
+			for(var i=0; i<genome.WheelGenomes.Length; i++) {
 				wg = genome.WheelGenomes[i];
 				var wheel:GameObject = this.gaController.loadObject(wg.wheelType,position + genome.wheelPositions[i]*structuralDistance,false);
 				wheel.transform.Rotate(wg.initialAngle);
@@ -229,15 +240,10 @@ class CartMaker {
 				joint.targetAngularVelocity=Vector3(0,5,0);
 				joint.angularYZDrive.mode=JointDriveMode.Velocity;
 				thiscart.components[i] = wheel;
-				Debug.Log("wheel "+i);	
 			}
-			Debug.Log("i = "+i+" and we've got room for "+ thiscart.components.Length + "elements");
 			thiscart.components[i] = cartbase;
-			Debug.Log("i = "+(i+1)+" and we've got room for "+ thiscart.components.Length + "elements");
 			thiscart.components[i+1] = motor;
-			Debug.Log("i = "+(i+2)+" and we've got room for "+ thiscart.components.Length + "elements");
 			thiscart.components[i+2] = powerpack;
-			
 			return thiscart;
 		}
 	}
@@ -260,37 +266,87 @@ class CartEvaluator {
 		Debug.Log("Evaluating cart");
 		// We'll evaluate based on distance traveled from start position.
 		if (cart.components.Length > 3) {
-		var cartbase = cart.components[cart.components.Length-3]; 
-		var endpos:Vector3 = cartbase.rigidbody.transform.position;
-		var startpos:Vector3 = this.maker.cartStartPos[index];
-		var dist:Vector3 = (endpos-startpos);
-		var result:float = dist.magnitude;
-		return result;
+			var cartbase = cart.components[cart.components.Length-3]; 
+			var endpos:Vector3 = cartbase.rigidbody.transform.position;
+			var startpos:Vector3 = this.maker.cartStartPos[index];
+			var dist:Vector3 = (endpos-startpos);
+			var result:float = dist.magnitude;
+			return result;
 		}
-		else
-		return 0;
+		else {
+			return 0;
+			}
 	}
 	function evaluateCarts() {
 		var metrics:float[] = new float[this.maker.carts.Length];
 		Debug.Log("maker has "+maker.carts.Length+" carts");
 		for(var i = 0; i<this.maker.carts.Length; i++) {
 			metrics[i] = this.evaluate(this.maker.carts[i],i);
+			Debug.Log(metrics[i]);
 		}
 		return metrics;
 	}
-
 }
 
 /*  Once carts (or other generic mechanisms) have been evaluated, they must reproduce.
 	A Replicator takes the evaluated performance values for mechanisms and determines 
-	which of them interbreed, then performs that interbreeding.  The breeding process
-	will initially be linear, but when the generic genome is finished, it will be a 
-	recursive process. */  
+	which of them interbreed, then performs that interbreeding.*/  
+
 class CartReplicator {
 	function CartReplicator() {
-	}
+	}	
 	function replicate(genomes:CartGenome[],metrics:float[]) {
-		return genomes;
+		var numCarts = metrics.Length;
+		var createdCarts:int = 0;
+		var createdGenomes:CartGenome[] = new CartGenome[numCarts];
+		var parent1:int = 0;
+		var parent2:int = 0;
+		// normalize the metrics first
+		var most_fit = Mathf.Max(metrics);
+		var least_fit = Mathf.Min(metrics);
+		for (var k = 0; k < metrics.Length; k++) {
+			metrics[k] = (metrics[k] - least_fit)/(most_fit-least_fit);
+			}
+		while(createdCarts < (numCarts)) {
+			var p1Index:int = Mathf.FloorToInt(Random.Range(0,numCarts));
+			if (metrics[p1Index] > Random.value) { // if the cart is fit enough to mate
+				var p2Index:int = Mathf.FloorToInt(Random.Range(0,numCarts));
+				if (p2Index != p1Index) {
+					Debug.Log("created a new genome.  Number "+createdCarts);
+					createdGenomes[createdCarts] = doCross(genomes[p1Index],genomes[p2Index]);
+					createdCarts++;
+				}
+			}
+		}
+		Debug.Log("created " + createdGenomes.Length + " new genomes.");
+		return createdGenomes;	
+	}
+	
+	function doCross(parent1:CartGenome, parent2:CartGenome){
+		Debug.Log("performing crossover");
+		var p1fields:System.Reflection.FieldInfo[] = parent1.GetType().GetFields();
+		var p2fields:System.Reflection.FieldInfo[] = parent2.GetType().GetFields();
+		if(p1fields.length != p2fields.length) {
+			Debug.Log("bad genome mix.  Unable to mate. Returning first parent");
+			return parent1;
+			}
+		var child:CartGenome = new CartGenome();
+		for(var i = 0; i<p1fields.Length; i++) {
+			var field:System.Reflection.FieldInfo = p1fields[i];
+			
+			if(Random.value<parent1.crossoverProbability) {
+				field.SetValue(child, field.GetValue(parent1));
+			}
+			else
+			{
+				field.SetValue(child, field.GetValue(parent2));
+			}
+		}
+		return child;
+		
+	}
+	function doMute(individual:CartGenome) {
+		var fields = individual.GetType().GetFields();
 	}
 }
 
@@ -336,7 +392,7 @@ function Update () {
 			Debug.Log("Metrics:" + metrics);
 			Debug.Log("For Genomes:" +maker.genomes);
 			
-			newGenomes = replicator.replicate(maker.genomes,metrics);		
+			newGenomes = replicator.replicate(maker.genomes,metrics);	
 			carts = maker.makeCarts(newGenomes);
 			generationStartTime = Time.time;
 		}
@@ -346,9 +402,9 @@ function Update () {
 /* Helper functions */
 function loadObject(objType:String,objpos:Vector3,addscript:boolean)
 {
-	Debug.Log("instantiating " + objType + "At position " + objpos);	
+	//Debug.Log("instantiating " + objType + "At position " + objpos);	
 	var obj:GameObject = Instantiate (Resources.Load(objType),objpos,Quaternion.identity);
-	Debug.Log(obj);
+	//Debug.Log(obj);
 	obj.transform.position = objpos;
 	obj.AddComponent("collisionKiller");
 	if(addscript) {
@@ -361,6 +417,6 @@ function loadObject(objType:String,objpos:Vector3,addscript:boolean)
 		Debug.Log("passing in mainscript of "+this);
 		//thisScript.intialize(this);
 	}
-	Debug.Log("returning cart base of type:" + obj.GetType());
+	//Debug.Log("returning cart base of type:" + obj.GetType());
 	return obj;
 }
