@@ -11,8 +11,6 @@ using UnityEngine;
 	
 		Dictionary<CoreChromosomeType,double> chromosomes;
 		
-    	//int numWheels;					// How many wheels the cart has
-    	//Vector3[] wheelPositions;		// array of wheel positions - is checked to ensure no collisions between existing wheels or the body of the vehicle.
     	List<IGene> children;
 			
 		public CoreGene ()

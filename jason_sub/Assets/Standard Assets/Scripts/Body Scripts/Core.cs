@@ -32,29 +32,32 @@ using UnityEngine;
 		
 			// Determine how 'spread out' all the pieces of the cart are.
 			//Debug.Log("index:"+index+" name"+name+" position"+position+" genome"+genome);
-			double structuralDistance = Mathf.Sqrt((float)structureMass);
-	
+			//double structuralDistance = Mathf.Sqrt((float)structureMass);
+			//Vector3 struturalScale = new Vector3((float)structuralDistance,(float)structuralDistance,(float)structuralDistance); 	
+		
 			// Determine the masses of the various structural components
-			double basemass = structureMass;
-			
+			double basemass = gene.getChromosome(CoreGene.CoreChromosomeType.structureMass);
+			motorAllocation = gene.getChromosome(CoreGene.CoreChromosomeType.motorAllocation);
+			powerPackAllocation = gene.getChromosome(CoreGene.CoreChromosomeType.powerPackAllocation);
 			double drivetotal = motorAllocation + powerPackAllocation;
 			double motormass = (motorAllocation / drivetotal) * drivepowerMass;
 			double powerpackmass = (powerPackAllocation / drivetotal) * drivepowerMass;
-
+			
+		
+			powerPackCG = Utilities.CreateVector3(gene.getChromosome(CoreGene.CoreChromosomeType.powerPackCG),0.1f,0.1f,0.1f);
+			motorCG = Utilities.CreateVector3(gene.getChromosome(CoreGene.CoreChromosomeType.motorCG),0.1f,0.1f,0.1f);
 			
 			
 			// If our motor or power pack are too light, then the joints will make them go crazy.  Don't let that happen:
 			//if ( motormass > (basemass / 10) && motormass < (basemass * 10))
-			{
-				motor = Utilities.loadObject("sphere",
-					(position + motorCG) ,false); // What was this doing there '* structuralDistance'
-			} 
+			//{
+				motor = Utilities.loadObject("sphere",(position + motorCG) ,false); // What was this doing there '* structuralDistance'
+			//} 
 			
 			//if (powerpackmass > (basemass/10) && powerpackmass < (basemass*10)) 
-			{
-				powerpack = Utilities.loadObject("sphere",
-				(position + powerPackCG),false); //here too: '* structuralDistance'
-			} 
+			//{ 
+				powerpack = Utilities.loadObject("sphere",(position + powerPackCG),false); //here too: '* structuralDistance'
+			//} 
 			
 			
 			// It's possible at this point that one of our components may be nonexistent.
@@ -76,14 +79,10 @@ using UnityEngine;
 				// connect the joint to the powerpack.  It will start at the pack, go to the cart.  It has a center at the center of the pack(0,0,0), and a primary axis of (1,0,0) - the x axis.
 				ConfigurableJoint packjoint = Joint.createJoint(powerpack,cartbase,new Vector3(0,0,0),new Vector3(1,0,0));
 				
-				Debug.Log("build wheels");
+				//Debug.Log("build wheels");
 				//var wheels = Array(genome.numWheels);
 				
-				
-				
-//				thiscart.components[i] = cartbase;
-//				thiscart.components[i+1] = motor;
-//				thiscart.components[i+2] = powerpack;
+
 				return true;
 			}
 			

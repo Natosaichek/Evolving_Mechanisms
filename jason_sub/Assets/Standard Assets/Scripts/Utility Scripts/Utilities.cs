@@ -29,6 +29,12 @@ using UnityEngine;
 		
 		public static Vector3 CreateVector3(double chromosomeVal,float max_x,float max_y, float max_z)
 		{
+			// each chromosome is a double - 8 bytes - 64 bits.  This means it has a max value of ~ 1.84467441 × 10^19
+			// We want to use as much of that as possible, in principle.  So each axis of the 3 vector will have a max of about .6*10^6
+			// or 600000.  Alternatively we could bit-shift it?  If we wanted it to come out nicely we could just ignore two bytes
+			// and use 2 bytes for each of the axes, but that means a max value about 65000, so we're losing an order of 
+			// magnitude of possible variation / detail.  Anyway, this should get cleaned up a bit somehow.
+			
 			Vector3 vect = new Vector3();
 			float xval = (float)chromosomeVal * max_x;
 			chromosomeVal = (chromosomeVal * 10000) % 500;

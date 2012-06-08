@@ -9,7 +9,7 @@ using UnityEngine;
 		//child gene likelihoods
 		//available child gene types
 		Dictionary<string,double> geneProbabilities;
-		public enum geneTypes {CORE,WHEEL,JOINT};
+		public enum geneTypes {CORE,WHEEL,JOINT,BONE};
 		public int numCreatures;
 		public World ()
 		{
