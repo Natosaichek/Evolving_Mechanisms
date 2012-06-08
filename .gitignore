@@ -1,7 +1,9 @@
 Library
-
+Assets
 ProjectSettings
 
-
+jason_sub/Temp
 jason_sub/Library
-jason_sub
+
+*.sln
+*.userprefs
