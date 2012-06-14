@@ -24,7 +24,7 @@ using UnityEngine;
 				chromosomes.Add(type,random.NextDouble());
 			}
 			//add 2 wheels just to get started
-		
+			
 		}
 		
 		public CoreGene (float childProbability)
@@ -35,13 +35,13 @@ using UnityEngine;
 		public Structure Express(Vector3 location,Structure parent)
 		{
 			Core creatureStructure = new Core();
-			if(creatureStructure.GenerateFromGene(this,location,null))
+			if(!creatureStructure.GenerateFromGene(this,location,null)) // if we weren't able to instantiate the core
 			{
-				return null;
+				return null; 											// then we're done.  But if we were...
 			}
-			foreach(IGene child in children)
+			foreach(IGene child in children) 							// then go through all the children
 			{
-				child.Express(location, creatureStructure);
+				child.Express(location, creatureStructure); 			// and express them.
 			}
 			return creatureStructure;
 		}
@@ -53,5 +53,4 @@ using UnityEngine;
 			return retVal;
 		}
 	}
-
 

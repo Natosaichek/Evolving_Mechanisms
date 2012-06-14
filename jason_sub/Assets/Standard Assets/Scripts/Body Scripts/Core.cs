@@ -75,9 +75,12 @@ using UnityEngine;
 				//var thiscart = Cart(genome.WheelGenomes.Length+3);
 				
 				// connect the joint to the motor.  It will start at the motor, go to the cart.  It has a center at the center of the motor(0,0,0), and a primary axis of (1,0,0) - the x axis.
-				ConfigurableJoint motorjoint = Joint.createJoint(motor,cartbase,new Vector3(0,0,0),new Vector3(1,0,0));
+				motor.transform.parent = cartbase.transform;
+				//ConfigurableJoint motorjoint = Joint.createJoint(motor,cartbase,new Vector3(0,0,0),new Vector3(1,0,0));
 				// connect the joint to the powerpack.  It will start at the pack, go to the cart.  It has a center at the center of the pack(0,0,0), and a primary axis of (1,0,0) - the x axis.
-				ConfigurableJoint packjoint = Joint.createJoint(powerpack,cartbase,new Vector3(0,0,0),new Vector3(1,0,0));
+				powerpack.transform.parent = cartbase.transform;
+				
+				//ConfigurableJoint packjoint = Joint.createJoint(powerpack,cartbase,new Vector3(0,0,0),new Vector3(1,0,0));
 				
 				//Debug.Log("build wheels");
 				//var wheels = Array(genome.numWheels);

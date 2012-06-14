@@ -36,6 +36,14 @@ using UnityEngine;
 			// magnitude of possible variation / detail.  Anyway, this should get cleaned up a bit somehow.
 			
 			Vector3 vect = new Vector3();
+			// a double has 8 bytes, or 64 bits.  We're going to bitshift the shit out of this to produce longs(16 bits).
+			// one of the nice things is that with 4 longs we could represent a generic quaternion pretty effectively.  
+			long maxValue = 0xff;
+			
+			long x_component = ((long)chromosomeVal >> 48) & 0x000000ff;
+			long y_component = ((long)chromosomeVal >> 32) & 0x000000ff;
+			long z_component = ((long)chromosomeVal >> 16) & 0x000000ff;
+		
 			float xval = (float)chromosomeVal * max_x;
 			chromosomeVal = (chromosomeVal * 10000) % 500;
 			float yval = (float)chromosomeVal * max_y;
