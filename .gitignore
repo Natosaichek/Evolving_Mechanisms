@@ -2,8 +2,6 @@ Library
 Assets
 ProjectSettings
 
-jason_sub/Temp
-jason_sub/Library
-
-*.sln
-*.userprefs
+evolved/Temp
+evolved/Library
+evolved/ProjectSettings
